@@ -23,20 +23,13 @@ Create a directory named auth in the same directory as your docker-compose.yml f
 
 Run the following command in the directory containing your docker-compose.yml file to start the Docker registry and UI:
 
-docker-compose up -d
+` docker-compose up -d `
 
 # Access Docker Registry UI
 Once the containers are running, you can access the Docker registry UI by visiting http://<Docker-host-IP>:8080 in your web browser. Log in using the username and password you set up in the htpasswd file.
 
 # Push and Pull Images
 You can now push Docker images to your private registry using the docker push command and pull images from it using the docker pull command. Make sure to tag your images with the address of your private registry (e.g., pvt-registry.io:5000/image-name) before pushing them.
-
-
-
-
-
-
-
 
 
 # Optimizing Docker Registry Storage
@@ -51,15 +44,29 @@ Utilize Docker's garbage collection command to perform cleanup in your registry.
 
 To tidy up storage by removing unused tags, consider the following procedures:
 
-Eliminate tags that are no longer in use:
+# Eliminate tags that are no longer in use:
 You can clean up all tags from an image except for the last five, which are typically retained for rollback purposes. To accomplish this, delete two directories from the repository location.
-rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/tags/${tag}/index/sha256/${hash}
-rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/revisions/sha256/${hash}
+
+` rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/tags/${tag}/index/sha256/${hash} `
+
+` rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/revisions/sha256/${hash} `
 
 Please note that <REGISTRY-HOME> denotes the registry mount location, such as /var/lib/registry.
 
 
-Cleaning up a large number of images with numerous tags can indeed be laborious when using APIs. Below is a code snippet that facilitates the cleanup of all tags except the last five from either the entire repository or a specific namespace:
+Cleaning up a large number of images with numerous tags can indeed be laborious when using APIs. Below scrip facilitates the cleanup of all tags except the last five from either the entire repository or a specific namespace:
 
 
-Run the optimize-storage-script.sh given in the repo.
+# Run the optimize-storage-script.sh given in the repo.
+https://github.com/ahsanaliq/private-docker-resgistry/blob/main/optimze-registry-storage.sh 
+
+Once this command is executed, unused blobs will be available for garbage collection
+
+# Garbage Collection
+
+Run the following command to remove the unused blobs and  free up server storage.
+
+` docker exec <Registry Container ID> bin/registry garbage-collect /etc/docker/registry/config.yml `
+
+
+# Thank me later :) 
