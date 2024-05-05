@@ -14,6 +14,7 @@ https://docs.docker.com/engine/install/
 
 # Create Docker Compose file:
   Create a docker compose file in your system. sample docker-compose.yml is given in repository
+ https://github.com/ahsanaliq/private-docker-resgistry/blob/main/docker-compose.yml
 
 # Set Up Authentication
 Create a directory named auth in the same directory as your docker-compose.yml file. Inside the auth directory, create a file named htpasswd containing your desired username and password for authentication. You can generate the htpasswd file using tools like htpasswd or online generators
