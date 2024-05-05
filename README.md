@@ -1,4 +1,4 @@
-# private-docker-resgistry
+# Private-Docker-Resgistry
 This repository shows how to deploy and manage a private docker registry on premises 
 
 
@@ -30,3 +30,36 @@ Once the containers are running, you can access the Docker registry UI by visiti
 
 # Push and Pull Images
 You can now push Docker images to your private registry using the docker push command and pull images from it using the docker pull command. Make sure to tag your images with the address of your private registry (e.g., pvt-registry.io:5000/image-name) before pushing them.
+
+
+
+
+
+
+
+
+
+# Optimizing Docker Registry Storage
+
+Optimizing storage usage in your Docker registry is crucial, especially when dealing with daily builds and multiple tags for a single image. Over time, unused layers, known as abandoned or unused layers, can accumulate, leading to significant disk space consumption and potential storage issues.
+
+Avoid tagging images solely as "latest." This practice, which often leads to referencing tags as 'latest' exclusively, results in numerous unused blobs over time. Consider numbering tags instead of relying solely on 'latest' to mitigate this issue. Otherwise, you may encounter situations where the current 'latest' tag does not utilize blobs from previous 'latest' tags, resulting in a buildup of unused blobs. It's not uncommon to find hundreds or thousands of such unused blobs within a "latest" image.
+
+Utilize Docker's garbage collection command to perform cleanup in your registry. However, be aware that this command primarily targets blobs that aren't referenced by any manifest. Due to the existence of numerous tags for a single image, these blobs often remain untouched by garbage collection. Consequently, even if certain blobs are no longer in use, they persist in the registry's storage. In scenarios where an image has more than 100 tags, the disk usage associated with such images can exceed 20 GB.
+
+
+
+To tidy up storage by removing unused tags, consider the following procedures:
+
+Eliminate tags that are no longer in use:
+You can clean up all tags from an image except for the last five, which are typically retained for rollback purposes. To accomplish this, delete two directories from the repository location.
+rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/tags/${tag}/index/sha256/${hash}
+rm -r <REGISTRY-HOME>/v2/repositories/${name}/_manifests/revisions/sha256/${hash}
+
+Please note that <REGISTRY-HOME> denotes the registry mount location, such as /var/lib/registry.
+
+
+Cleaning up a large number of images with numerous tags can indeed be laborious when using APIs. Below is a code snippet that facilitates the cleanup of all tags except the last five from either the entire repository or a specific namespace:
+
+
+Run the optimize-storage-script.sh given in the repo.
